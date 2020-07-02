@@ -1,0 +1,516 @@
+openapi: 3.0.0
+info:
+  title: Bubble PPM Users API specification
+  description: The Users API endpoint for the Bubble PPM platform.
+  contact:
+    name: Bubble Limited
+    url: bubblegroup.com
+    email: support@bubbleppm.com
+  version: '1.0.1'
+servers:
+- url: https://yourdoman.bubbleppm.com/api/
+  description: This will be your own client production environment of the form <yourdomain>.bubbleppm.com
+  variables: {}
+- url: users-sandbox.bubbleppm.com/api/users
+  description: A sandbox users environment for testing purposes
+  variables: {}
+paths:
+  /provisioning/:
+    get:
+      tags:
+      - users
+      summary: listUsers
+      description: List all users and/or project resources and their attributes
+      operationId: listUsers
+      parameters: []
+      responses:
+        200:
+          description: A single list of all users
+          headers: {}
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+                description: A single list of all users
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: An error occurred while processing the request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Resource Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      deprecated: false
+    post:
+      tags:
+      - users
+      summary: createUsers
+      description: Create a user if the user does not exist, reactivate them otherwise
+      operationId: createUsers
+      parameters: []
+      requestBody:
+        description: The JSON payload for the users
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/User'
+              description: The JSON payload for the users
+        required: true
+        x-send-file-in-body: false
+      responses:
+        200:
+          description: All users created or reactivated
+          headers: {}
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+                description: All users created or reactivated
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: An error occurred while processing the request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Resource Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      deprecated: false
+  /provisioning/{userId}:
+    get:
+      tags:
+      - users
+      summary: showUserById
+      description: Attributes for a specific user
+      operationId: showUserById
+      parameters:
+      - name: userId
+        in: path
+        description: The id of the user to retrieve where userId is optionally the Bubble PPM id or the email
+        required: true
+        style: simple
+        schema:
+          type: string
+      responses:
+        200:
+          description: Expected response to a valid request
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: An error occurred while processing the request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      deprecated: false
+    put:
+      tags:
+      - users
+      summary: updateUserById
+      description: Update the user where they exist, ignore otherwise. This deviates from standard REST conventions in that it will NOT create if it does not exist. Because of this, where creation is intended a POST request containing a list of one user to /users/ should be preferred.
+      operationId: updateUserById
+      parameters:
+      - name: userId
+        in: path
+        description: The id of the user to retrieve where id is optionally the Bubble PPM id or the email
+        required: true
+        style: simple
+        schema:
+          type: string
+          example: 12
+      responses:
+        204:
+          description: Fully processed valid request
+          headers: {}
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: An error occurred while processing the request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Resource Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      deprecated: false
+    delete:
+      tags:
+      - users
+      summary: deactivateUserById
+      description: Deactivate an individual user
+      operationId: deactivateUserById
+      parameters:
+      - name: userId
+        in: path
+        description: The id of the user to deactivate where id is optionally the Bubble PPM id or the email
+        required: true
+        style: simple
+        schema:
+          type: string
+      responses:
+        204:
+          description: Expected response to a valid request
+          headers: {}
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: An error occurred while processing the request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Resource Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      deprecated: false
+    patch:
+      tags:
+      - users
+      summary: patchUserById
+      description: Update a user
+      operationId: patchUserById
+      parameters:
+      - name: userId
+        in: path
+        description: The id of the user to patch where id is optionally the Bubble PPM id or the email
+        required: true
+        style: simple
+        schema:
+          type: string
+      requestBody:
+        description: The JSON payload of the patch request
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/User'
+              description: The JSON payload for the users
+        required: true
+        x-send-file-in-body: false
+      responses:
+        200:
+          description: Expected response to a valid request
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Resource Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: An error occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      deprecated: false
+  /provisioning/permissions:
+    get:
+      tags:
+      - permissions
+      summary: showPermissions
+      description: List all permissions in the system
+      operationId: showPermissions
+      parameters: []
+      responses:
+        200:
+          description: Expected response to a valid request
+          headers: {}
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                description: Expected response to a valid request
+      deprecated: false
+  /provisioning/roles:
+    get:
+      tags:
+      - roles
+      summary: showRoles
+      description: List all roles in the system
+      operationId: showRoles
+      parameters: []
+      responses:
+        200:
+          description: Expected response to a valid request
+          headers: {}
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                description: Expected response to a valid request
+      deprecated: false
+  /provisioning/departments:
+    get:
+      tags:
+      - departments
+      summary: showDepartments
+      description: List all departments in the system
+      operationId: showDepartments
+      parameters: []
+      responses:
+        200:
+          description: Expected response to a valid request
+          headers: {}
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                description: Expected response to a valid request
+      deprecated: false
+  /provisioning/languages:
+    get:
+      tags:
+      - languages
+      summary: showLanguages
+      description: List all languages in the system
+      operationId: showLanguages
+      parameters: []
+      responses:
+        200:
+          description: Expected response to a valid request
+          headers: {}
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                description: Expected response to a valid request
+      deprecated: false
+  /provisioning/keyskills:
+    get:
+      tags:
+      - keySkills
+      summary: showKeySkills
+      description: List all key skills in the system
+      operationId: showKeySkills
+      parameters: []
+      responses:
+        200:
+          description: Expected response to a valid request
+          headers: {}
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                description: Expected response to a valid request
+      deprecated: false
+components:
+  schemas:
+    User:
+      title: User
+      required:
+      - first_name
+      - last_name
+      - email
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The internal Bubble PPM id for this user
+          format: int64
+        first_name:
+          type: string
+          description: The preferred first name of the user or project resource
+          example: Jane
+        last_name:
+          type: string
+          description: The preferred last name of the user or project resource
+          example: Doe
+        email:
+          type: string
+          description: The unique email address associated to the user or project resource
+          example: janedoe@example.com
+        active:
+          type: boolean
+          description: True if the user or project resource is active, false otherwise
+          example: false
+        language:
+          type: string
+          description: The LCID language code of the preferred language of the user or project resource
+          example: en-US
+        department:
+          type: string
+          description: The local language name of the department of the user or project resource.
+          example: PMO
+        key_skills:
+          type: array
+          items:
+            type: string
+          description: A list of key skills of the user or project resource
+        permissions:
+          type: array
+          items:
+            type: string
+          description: A list of the permissions of the user or project resource in the local language
+        role:
+          type: array
+          items:
+            type: string
+          description: The roles of the user or project resource
+        staff:
+          type: boolean
+          description: True if the user has access to the administration functions of the application. Should be used very sparingly as has wide access to system resources.
+          example: false
+        receives_digest:
+          type: boolean
+          description: True if the user receives a digest email of the actions and events
+          example: false
+        digest_frequency:
+          type: string
+          description: The frequency with which digests are sent, if any. One of Daily, Weekly.
+          example: Daily
+      description: A user or project resource within the Bubble PPM platform
+    PartialSuccess:
+      title: PartialSuccess
+      type: object
+      properties:
+        successes:
+          type: array
+          items:
+            type: string
+          description: A list of strings that identify the successes in performing the action
+        failures:
+          type: array
+          items:
+            type: string
+          description: A list of strings that identify the failures in performing the actions
+      description: The payload that describes the operation of the server in the event of a partial success.
+    Error:
+      title: Error
+      required:
+      - message
+      type: object
+      properties:
+        message:
+          type: string
+          description: The message describing the error
+      description: A generic error message holder
+      example:
+        message: This is an example error message
+security:
+- Authorization: []
+tags:
+- name: users
+  description: ''
+- name: permissions
+  description: ''
+- name: roles
+  description: ''
+- name: departments
+  description: ''
+- name: languages
+  description: ''
+- name: keySkills
+  description: ''
